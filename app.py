@@ -75,7 +75,7 @@ def vectorize_genre_to_cosine_mat(data):
 def get_recommendation(genre_index, cosine_sim_mat, df, num_of_rec=10):
     sim_scores = cosine_sim_mat[genre_index]
     sim_indices = sim_scores.argsort()[::-1][1:num_of_rec+1]  # Получаем индексы наиболее похожих игр
-    recommendations = df.iloc[sim_indices]['Title'].tolist()  # Получаем список рекомендаций
+    recommendations = df.iloc[sim_indices]['title'].tolist()  # Получаем список рекомендаций
     return recommendations
 
 def list_games_page():
@@ -100,7 +100,7 @@ def list_games_page():
 
 def recommendation_page():
     df = load_data("data/dataset2.csv")
-    cosine_sim_mat = vectorize_genre_to_cosine_mat(df['Genre'])  # Передаём только жанры игр для векторизации
+    cosine_sim_mat = vectorize_genre_to_cosine_mat(df['genre'])  # Передаём только жанры игр для векторизации
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
 
@@ -108,7 +108,7 @@ def recommendation_page():
     search_button = st.button('Поиск')
 
     if search_button:
-        genre_index = df[df['Title'] == search_query].index[0]  # Получаем индекс жанра по названию игры
+        genre_index = df[df['title'] == search_query].index[0]  # Получаем индекс жанра по названию игры
         recommendations = get_recommendation(genre_index, cosine_sim_mat, df)
         if recommendations:
             st.write('Рекомендации:')
