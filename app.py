@@ -100,13 +100,23 @@ def list_games_page():
             for column, value in df.iloc[index].drop('ID').items():  # исключаем столбец с ID
                 st.write(f"{column}: {value}")
 
-def get_recommendation(title, cosine_sim_mat, df, num_of_rec = 10):
-    game_indices = pd.Series(df.index, index=df['Title']).drop_duplicates()
-    idx = game_indices[title]
-    sim_scores = cosine_sim_mat[idx]
-    sim_indices = sim_scores.argsort()[::-1][1:num_of_rec+1]  # Получаем индексы наиболее похожих игр
-    recommendations = df.iloc[sim_indices]['Title'].tolist()  # Получаем список рекомендаций
-    return recommendations
+def recommendation_page():
+    df = load_data("data/all_data.csv")
+    cosine_sim_mat = vectorize_text_to_cosine_mat(df['Title'])  # Передаём только названия игр для векторизации
+    st.title('Получить рекомендации')
+    st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр:')
+
+    search_query = st.text_input('Введите название видеоигры:')
+    search_button = st.button('Поиск')
+
+    if search_button:
+        recommendations = get_recommendation(search_query, cosine_sim_mat, df)
+        if recommendations:
+            st.write('Рекомендации:')
+            for game_title in recommendations:
+                st.write(f"{game_title}")
+        else:
+            st.write('По вашему запросу рекомендации не найдены.')
 
 def main():
     selected_page = st.sidebar.radio('Выберите страницу', ['Главная страница', 'Список видеоигр', 'Поиск видеоигры', 'Рекомендации по видеоигре', 'О нас'])
