@@ -77,7 +77,7 @@ def get_recommendation(title, cosine_sim_mat, df, num_of_rec=10):
     idx = game_indices[title]
     sim_scores = cosine_sim_mat[idx]
     sim_indices = sim_scores.argsort()[::-1][1:num_of_rec+1]  # Получаем индексы наиболее похожих игр
-    recommendations = df.iloc[sim_indices]['Title'].tolist()  # Получаем список рекомендаций
+    recommendations = df.iloc[sim_indices.flatten()]['Title'].tolist()  # Получаем список рекомендаций
     return recommendations
 
 def list_games_page():
