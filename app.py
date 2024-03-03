@@ -72,7 +72,7 @@ def vectorize_text_to_cosine_mat(data):
     cosine_sim_mat = cosine_similarity(cv_mat)
     return cosine_sim_mat
 
-def get_recommendation(title, cosine_sim_mat, df, num_of_rec = 10):
+def get_recommendation(title, cosine_sim_mat, df, num_of_rec=10):
     game_indices = pd.Series(df.index, index=df['Title']).drop_duplicates()
     idx = game_indices[title]
     sim_scores = cosine_sim_mat[idx]
