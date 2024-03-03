@@ -66,10 +66,10 @@ def load_data(data):
     df = pd.read_csv(data)
     return df
 
-def vectorize_text_to_cosine_mat(data):
+def vectorize_genre_to_cosine_mat(data):
     count_vect = CountVectorizer()
     cv_mat = count_vect.fit_transform(data)
-    cosine_sim_mat = cosine_similarity(cv_mat)
+    cosine_sim_mat = cosine_similarity(cv_mat.T)  # Транспонирование матрицы для вычисления сходства по столбцам
     return cosine_sim_mat
 
 def get_recommendation(title, cosine_sim_mat, df, num_of_rec=10):
@@ -102,9 +102,9 @@ def list_games_page():
 
 def recommendation_page():
     df = load_data("data/all_data.csv")
-    cosine_sim_mat = vectorize_text_to_cosine_mat(df['Title'])  # Передаём только названия игр для векторизации
+    cosine_sim_mat = vectorize_genre_to_cosine_mat(df['Genre'])  # Передаём только жанры игр для векторизации
     st.title('Получить рекомендации')
-    st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр:')
+    st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
 
     search_query = st.text_input('Введите название видеоигры:')
     search_button = st.button('Поиск')
