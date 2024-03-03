@@ -66,11 +66,11 @@ def load_data(data):
     df = pd.read_csv(data)
     return df
 
-# def vectorize_text_to_cosine_mat(data):
-#    count_vect = CountVectorizer()
-#    cv_mat = count_vect.fit_transform(data)
-#    cosine_sim_mat = cosine_similarity(cv_mat)
-#    return cosine_sim_mat
+def vectorize_text_to_cosine_mat(data):
+    count_vect = CountVectorizer()
+    cv_mat = count_vect.fit_transform(data)
+    cosine_sim_mat = cosine_similarity(cv_mat)
+    return cosine_sim_mat
 
 #def get_recommendation(title, cosine_sim_mat, df, num_of_rec = 10):
 #    game_indices = pd.Series(df.index, index = df['Title']).drop_duplicates()
