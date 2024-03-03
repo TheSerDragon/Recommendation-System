@@ -103,8 +103,8 @@ def list_games_page():
                 st.write(f"{column}: {value}")
 
 def recommendation_page():
-    df = load_data("data/all_data.csv")
-    similarity = vectorize_genre_to_cosine_mat(df['Genre'])  # переносим сюда инициализацию матрицы схожести
+    df = load_data("data/dataset2.csv")
+    similarity = vectorize_genre_to_cosine_mat(df['genre'])  # переносим сюда инициализацию матрицы схожести
 
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
