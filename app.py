@@ -103,7 +103,7 @@ def list_games_page():
                 st.write(f"{column}: {value}")
 
 def recommendation_page():
-    df = load_data("data/new_dataset.csv")
+    df = load_data("data/dataset2.csv")
     similarity = vectorize_genre_to_cosine_mat(df['genre'])  # переносим сюда инициализацию матрицы схожести
 
     st.title('Получить рекомендации')
@@ -116,10 +116,10 @@ def recommendation_page():
         recommendations = recommend(df, search_query, similarity)
         if recommendations != "Game not found in the dataset":
             st.write('Рекомендации:')
-            for game_title, platform in recommendations:
-                st.write(f"Название: {title}, Платформа: {platform}")
+            for game_title, similarity_score in recommendations:
+                st.write(f"{game_title} (Similarity Score: {similarity_score})")
         else:
-            st.write('Игра не найдена в датасете')
+            st.write('Game not found in the dataset')
 
 def main():
     selected_page = st.sidebar.radio('Выберите страницу', ['Главная страница', 'Список видеоигр', 'Поиск видеоигры', 'Рекомендации по видеоигре', 'О нас'])
