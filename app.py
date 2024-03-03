@@ -99,7 +99,7 @@ def list_games_page():
                 st.write(f"{column}: {value}")
 
 def recommendation_page():
-    df = load_data("data/all_data.csv")
+    df = load_data("data/dataset2.csv")
     cosine_sim_mat = vectorize_genre_to_cosine_mat(df['Genre'])  # Передаём только жанры игр для векторизации
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
