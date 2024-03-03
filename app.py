@@ -117,7 +117,7 @@ def recommendation_page():
         if recommendations != "Game not found in the dataset":
             st.write('Рекомендации:')
             for game_title, similarity_score in recommendations:
-                game_version = df.loc[df['title'] == game_title, 'version'].values[0]  # Получаем версию игры
+                game_version = df.loc[df['title'] == game_title, 'platform'].values[0]  # Получаем версию игры
                 st.write(f"{game_title} ({game_version})")
         else:
             st.write('Игра не найдена в наборе данных')
