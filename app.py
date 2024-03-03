@@ -72,12 +72,12 @@ def vectorize_text_to_cosine_mat(data):
     cosine_sim_mat = cosine_similarity(cv_mat)
     return cosine_sim_mat
 
-#def get_recommendation(title, cosine_sim_mat, df, num_of_rec = 10):
-#    game_indices = pd.Series(df.index, index = df['Title']).drop_duplicates()
-#    idx = game_indices[title]
-#    sim_scores = list(enumerate(cosine_sim_mat[idx]))
-#    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-#    return sim_scores[1:]
+def get_recommendation(title, cosine_sim_mat, df, num_of_rec = 10):
+    game_indices = pd.Series(df.index, index = df['Title']).drop_duplicates()
+    idx = game_indices[title]
+    sim_scores = list(enumerate(cosine_sim_mat[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    return sim_scores[1:]
 
 
 def list_games_page():
@@ -102,23 +102,23 @@ def list_games_page():
 
 def recommendation_page():
     df = load_data("data/all_data.csv")
-    #cosine_sim_mat = vectorize_text_to_cosine_mat(df['Title'])
+    cosine_sim_mat = vectorize_text_to_cosine_mat(df['Title'])
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр:')
 
     search_query = st.text_input('Введите название видеоигры:')
     search_button = st.button('Поиск')
 
-    # if search_button:
+    if search_button:
         # Получаем рекомендации
-    #    recommendations = get_recommendation(search_query, cosine_sim_mat, df)
-    #    if recommendations:
-    #        st.write('Рекомендации:')
-    #        for idx, sim_score in recommendations:
-    #            game_title = df.iloc[idx]['Title']
-    #            st.write(f"{game_title} (Коэффициент сходства: {sim_score})")
-    #    else:
-    ##        st.write('По вашему запросу рекомендации не найдены.')
+        recommendations = get_recommendation(search_query, cosine_sim_mat, df)
+        if recommendations:
+            st.write('Рекомендации:')
+            for idx, sim_score in recommendations:
+                game_title = df.iloc[idx]['Title']
+                st.write(f"{game_title} (Коэффициент сходства: {sim_score})")
+        else:
+            st.write('По вашему запросу рекомендации не найдены.')
 
 def main():
     selected_page = st.sidebar.radio('Выберите страницу', ['Главная страница', 'Список видеоигр', 'Поиск видеоигры', 'Рекомендации по видеоигре', 'О нас'])
