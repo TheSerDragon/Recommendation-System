@@ -69,15 +69,13 @@ def load_data(data):
 def vectorize_genre_to_cosine_mat(data):
     count_vect = CountVectorizer()
     cv_mat = count_vect.fit_transform(data)
-    cosine_sim_mat = cosine_similarity(cv_mat.T)  # Транспонирование матрицы для вычисления сходства по столбцам
+    cosine_sim_mat = cosine_similarity(cv_mat)
     return cosine_sim_mat
 
-def get_recommendation(title, cosine_sim_mat, df, num_of_rec=10):
-    game_indices = pd.Series(df.index, index=df['Title']).drop_duplicates()
-    idx = game_indices[title]
-    sim_scores = cosine_sim_mat[idx]
+def get_recommendation(genre_index, cosine_sim_mat, df, num_of_rec=10):
+    sim_scores = cosine_sim_mat[genre_index]
     sim_indices = sim_scores.argsort()[::-1][1:num_of_rec+1]  # Получаем индексы наиболее похожих игр
-    recommendations = df.iloc[sim_indices.flatten()]['Title'].tolist()  # Получаем список рекомендаций
+    recommendations = df.iloc[sim_indices]['Title'].tolist()  # Получаем список рекомендаций
     return recommendations
 
 def list_games_page():
@@ -110,7 +108,8 @@ def recommendation_page():
     search_button = st.button('Поиск')
 
     if search_button:
-        recommendations = get_recommendation(search_query, cosine_sim_mat, df)
+        genre_index = df[df['Title'] == search_query].index[0]  # Получаем индекс жанра по названию игры
+        recommendations = get_recommendation(genre_index, cosine_sim_mat, df)
         if recommendations:
             st.write('Рекомендации:')
             for game_title in recommendations:
