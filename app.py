@@ -67,16 +67,20 @@ def load_data(data):
     return df
 
 def vectorize_genre_to_cosine_mat(data):
-    count_vect = CountVectorizer()
-    cv_mat = count_vect.fit_transform(data)
-    cosine_sim_mat = cosine_similarity(cv_mat)
+    count_vect = CountVectorizer(encoding='utf-8')
+    vectors = count_vect.fit_transform(data.values.astype('U'))
+    cosine_sim_mat = cosine_similarity(vectors)
     return cosine_sim_mat
 
-def get_recommendation(genre_index, cosine_sim_mat, df, num_of_rec=10):
-    sim_scores = cosine_sim_mat[genre_index]
-    sim_indices = sim_scores.argsort()[::-1][1:num_of_rec+1]  # Получаем индексы наиболее похожих игр
-    recommendations = df.iloc[sim_indices]['title'].tolist()  # Получаем список рекомендаций
-    return recommendations
+def recommend(data, title, similarity):
+    if title in data['title'].values:
+        game_index = data[data['title'] == title].index[0]
+        distances = similarity[game_index]
+        game_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:11]
+        similar_games = sorted(list(zip(data['title'].iloc[[index for index, _ in game_list]], distances)), key=lambda x: x[1], reverse=True)[0:10]
+        return similar_games
+    else:
+        return "Game not found in the dataset"
 
 def list_games_page():
     df = load_data("data/all_data.csv")
@@ -99,8 +103,9 @@ def list_games_page():
                 st.write(f"{column}: {value}")
 
 def recommendation_page():
-    df = load_data("data/dataset2.csv")
-    cosine_sim_mat = vectorize_genre_to_cosine_mat(df['genre'])  # Передаём только жанры игр для векторизации
+    df = load_data("data/all_data.csv")
+    similarity = vectorize_genre_to_cosine_mat(df['Genre'])  # переносим сюда инициализацию матрицы схожести
+
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
 
@@ -108,14 +113,13 @@ def recommendation_page():
     search_button = st.button('Поиск')
 
     if search_button:
-        genre_index = df[df['title'] == search_query].index[0]  # Получаем индекс жанра по названию игры
-        recommendations = get_recommendation(genre_index, cosine_sim_mat, df)
-        if recommendations:
+        recommendations = recommend(df, search_query, similarity)
+        if recommendations != "Game not found in the dataset":
             st.write('Рекомендации:')
-            for game_title in recommendations:
-                st.write(f"{game_title}")
+            for game_title, similarity_score in recommendations:
+                st.write(f"{game_title} (Similarity Score: {similarity_score})")
         else:
-            st.write('По вашему запросу рекомендации не найдены.')
+            st.write('Game not found in the dataset')
 
 def main():
     selected_page = st.sidebar.radio('Выберите страницу', ['Главная страница', 'Список видеоигр', 'Поиск видеоигры', 'Рекомендации по видеоигре', 'О нас'])
