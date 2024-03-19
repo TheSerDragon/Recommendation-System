@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from fuzzywuzzy import process
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
