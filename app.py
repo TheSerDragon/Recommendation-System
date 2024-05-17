@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Отображение главной страницы
 def main_page():
     st.title('Главная страница')
-    st.image('https://w.forfun.com/fetch/e2/e29735d2e532b4aeb8ee2417816fa776.jpeg')
+    st.image('e29735d2e532b4aeb8ee2417816fa776.jpeg')
     st.write(
         'Добро пожаловать в инновационную платформу, где вы можете открыть мир видеоигр с новой перспективы. Мы предлагаем уникальную рекомендательную систему, специально разработанную для того, чтобы помочь вам развивать профессиональные навыки через игровой опыт.')
     st.write(
@@ -21,10 +21,10 @@ def main_page():
 
 # Отображение страницы поиска видеоигры
 def video_game_page():
-    df = load_data("data/new_all_data.csv")
+    df = load_data("data/new_all_data2.csv")
     st.title('Поиск видеоигры')
 
-    platform_options = df['Platform'].unique().tolist()
+    platform_options = df['Платформа'].unique().tolist()
     platform_options = [platform for platform in platform_options if platform != 'not specified']
 
     # Добавление элементов интерфейса для выбора критериев поиска
@@ -34,7 +34,7 @@ def video_game_page():
     search_query = {}
     for criteria in search_criteria:
         if criteria == 'Название':
-            title_options = df['Title'].unique().tolist()
+            title_options = df['Название'].unique().tolist()
             search_query['Название'] = st.selectbox('Введите название видеоигры:', title_options)
         elif criteria == 'Жанр':
             search_query['Жанр'] = st.text_input('Введите жанр видеоигры:')
@@ -58,25 +58,25 @@ def video_game_page():
         filtered_df = df.copy()
         for key, value in search_query.items():
             if key == 'Название':
-                filtered_df = filtered_df[filtered_df['Title'].str.contains(value, case=False)]
+                filtered_df = filtered_df[filtered_df['Название'].str.contains(value, case=False)]
             elif key == 'Жанр':
-                filtered_df = filtered_df[filtered_df['Genre'].str.lower().str.contains(value.lower())]
+                filtered_df = filtered_df[filtered_df['Жанр'].str.lower().str.contains(value.lower())]
             elif key == 'Платформа':
-                filtered_df = filtered_df[filtered_df['Platform'] == value]
+                filtered_df = filtered_df[filtered_df['Платформа'] == value]
             elif key == 'Оценка критиков':
                 min_score, max_score = value
-                filtered_df['Metascore'] = pd.to_numeric(filtered_df['Metascore'], errors='coerce')
-                filtered_df = filtered_df[(filtered_df['Metascore'] >= min_score) & (filtered_df['Metascore'] <= max_score)]
+                filtered_df['Оценка_критиков'] = pd.to_numeric(filtered_df['Оценка_критиков'], errors='coerce')
+                filtered_df = filtered_df[(filtered_df['Оценка_критиков'] >= min_score) & (filtered_df['Оценка_критиков'] <= max_score)]
             elif key == 'Оценка пользователей':
                 min_score, max_score = value
-                filtered_df['Avg_Userscore'] = pd.to_numeric(filtered_df['Avg_Userscore'], errors='coerce')
-                filtered_df = filtered_df[(filtered_df['Avg_Userscore'] >= min_score) & (filtered_df['Avg_Userscore'] <= max_score)]
+                filtered_df['Оценка_пользователей'] = pd.to_numeric(filtered_df['Оценка_пользователей'], errors='coerce')
+                filtered_df = filtered_df[(filtered_df['Оценка_пользователей'] >= min_score) & (filtered_df['Оценка_пользователей'] <= max_score)]
 
         if not filtered_df.empty:
             st.write('Найденные версии:')
             for index, row in filtered_df.iterrows():
                 # Отображение краткой информации о версии видеоигры в виде раскрывающегося блока
-                with st.expander(f"{row['Title']} - {row['Genre']} ({row['Platform']})", expanded=False):
+                with st.expander(f"{row['Название']} - {row['Жанр']} ({row['Платформа']})", expanded=False):
                     for column, value in row.drop('ID').items():  # исключаем столбец с ID
                         st.write(f"{column}: {value}")
         else:
@@ -122,12 +122,12 @@ def recommend(data, title, similarity):
                                key=lambda x: x[1], reverse=True)[0:15]
         return similar_games
     else:
-        return "Game not found in the dataset"
+        return "Видеоигры по вашему запросу не найдены"
 
 
 # Отображение списка доступных видеоигр
 def list_games_page():
-    df = load_data("data/new_all_data.csv")
+    df = load_data("data/new_all_data2.csv")
     st.title('Список доступных видеоигр')
     st.write('Вот список всех доступных видеоигр:')
 
@@ -142,7 +142,7 @@ def list_games_page():
         st.write('На этой странице нет игр.')
 
     for index in range(start_index, end_index):
-        with st.expander(f"{df.iloc[index]['Title']} - {df.iloc[index]['Genre']} ({df.iloc[index]['Platform']})",
+        with st.expander(f"{df.iloc[index]['Название']} - {df.iloc[index]['Жанр']} ({df.iloc[index]['Платформа']})",
                          expanded=False):
             for column, value in df.iloc[index].drop('ID').items():  # исключение столбца ID
                 st.write(f"{column}: {value}")
@@ -150,33 +150,33 @@ def list_games_page():
 
 # Отображение страницы получения рекомендаций
 def recommendation_page():
-    df_all = load_data("data/new_all_data.csv")
+    df_all = load_data("data/new_all_data2.csv")
     similarity = vectorize_genre_to_cosine_mat(load_data("data/new_dataset.csv")['genre'])
 
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
 
-    selected_game = st.selectbox('Выберите видеоигру:', df_all['Title'].unique())
+    selected_game = st.selectbox('Выберите видеоигру:', df_all['Название'].unique())
 
     search_button = st.button('Рекомендации')
 
     if search_button:
-        if selected_game in df_all['Title'].values:
+        if selected_game in df_all['Название'].values:
             recommendations = recommend(load_data("data/new_dataset.csv"), selected_game, similarity)
-            if recommendations != "Game not found in the dataset":
+            if recommendations != "Игра не найдена в наборе данных":
                 st.write('Рекомендации:')
                 recommended_titles = set()
                 for game_title, similarity_score in recommendations:
                     if game_title not in recommended_titles:
                         recommended_titles.add(game_title)
-                        game_row = df_all[df_all['Title'] == game_title].iloc[0]
-                        with st.expander(f"{game_row['Title']} - {game_row['Genre']} ({game_row['Platform']})", expanded=False):
+                        game_row = df_all[df_all['Название'] == game_title].iloc[0]
+                        with st.expander(f"{game_row['Название']} - {game_row['Жанр']} ({game_row['Платформа']})", expanded=False):
                             for column, value in game_row.drop('ID').items():
                                 st.write(f"{column}: {value}")
             else:
-                st.write('Игра не найдена в наборе данных')
+                st.write('Видеоигры по вашему запросу не найдены')
         else:
-            st.write('Игра не найдена в наборе данных')
+            st.write('Видеоигры по вашему запросу не найдены')
 
 
 # Основная функция для выбора страницы приложения
