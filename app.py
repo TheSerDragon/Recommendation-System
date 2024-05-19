@@ -38,7 +38,7 @@ def video_game_page():
             title_options = df['Название'].unique().tolist()
             search_query['Название'] = st.selectbox('Введите название видеоигры:', title_options)
         elif criteria == 'Жанр':
-            search_query['Жанр'] = st.text_input('Введите жанр видеоигры:')
+            search_query['Жанр'] = st.text_input('Введите жанр(ы) видеоигры (разделяйте через запятую):')
         elif criteria == 'Платформа':
             search_query['Платформа'] = st.selectbox('Выберите платформу:', platform_options)
         elif criteria == 'Оценка критиков':
