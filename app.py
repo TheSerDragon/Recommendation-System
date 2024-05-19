@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import re
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -60,7 +61,10 @@ def video_game_page():
             if key == 'Название':
                 filtered_df = filtered_df[filtered_df['Название'].str.contains(value, case=False)]
             elif key == 'Жанр':
-                filtered_df = filtered_df[filtered_df['Жанр'].str.lower().str.contains(value.lower())]
+                genres = value.split(',')
+                regex_patterns = [re.escape(genre.strip().lower()) for genre in genres]
+                regex_pattern = '(?=.*' + ')(?=.*'.join(regex_patterns) + ')'
+                filtered_df = filtered_df[filtered_df['Жанр'].str.lower().str.contains(regex_pattern)]
             elif key == 'Платформа':
                 filtered_df = filtered_df[filtered_df['Платформа'] == value]
             elif key == 'Оценка критиков':
