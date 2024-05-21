@@ -118,11 +118,11 @@ def vectorize_genre_to_cosine_mat(data):
 # Функция для рекомендации похожих игр на основе жанров
 @st.cache_data
 def recommend(data, title, similarity):
-    if title in data['title'].values:
-        game_index = data[data['title'] == title].index[0]
+    if title in data['название'].values:
+        game_index = data[data['название'] == title].index[0]
         distances = similarity[game_index]
         game_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:16]
-        similar_games = sorted(list(zip(data['title'].iloc[[index for index, _ in game_list]], distances)),
+        similar_games = sorted(list(zip(data['название'].iloc[[index for index, _ in game_list]], distances)),
                                key=lambda x: x[1], reverse=True)[0:15]
         return similar_games
     else:
@@ -155,7 +155,7 @@ def list_games_page():
 # Отображение страницы получения рекомендаций
 def recommendation_page():
     df_all = load_data("data/new_all_data2.csv")
-    similarity = vectorize_genre_to_cosine_mat(load_data("data/new_dataset.csv")['genre'])
+    similarity = vectorize_genre_to_cosine_mat(load_data("data/new_dataset2.csv")['жанр'])
 
     st.title('Получить рекомендации')
     st.write('Введите название видеоигры, чтобы получить рекомендации похожих игр по жанру:')
@@ -166,7 +166,7 @@ def recommendation_page():
 
     if search_button:
         if selected_game in df_all['Название'].values:
-            recommendations = recommend(load_data("data/new_dataset.csv"), selected_game, similarity)
+            recommendations = recommend(load_data("data/new_dataset2.csv"), selected_game, similarity)
             if recommendations != "Игра не найдена в наборе данных":
                 st.write('Рекомендации:')
                 recommended_titles = set()
