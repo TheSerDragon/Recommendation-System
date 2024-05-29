@@ -137,7 +137,7 @@ def list_games_page():
 
     total_pages = len(df) // 10 + (1 if len(df) % 10 > 0 else 0)
 
-    page_number = st.number_input('Выберите номер страницы (1-501):', min_value=1, max_value=total_pages, value=1)
+    page_number = st.number_input('Выберите номер страницы (1-499):', min_value=1, max_value=total_pages, value=1)
 
     start_index = (page_number - 1) * 10
     end_index = min(start_index + 10, len(df))
